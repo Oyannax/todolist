@@ -25,15 +25,15 @@ if (isset($_GET['action'])) {
                     ]);
         
                     if ($IsAddOk && $addTask->rowCount() === 1) {
-                        $msg['notif'] = 'Your task has been created!';
+                        $_SESSION['notif'] = 'Your task has been created!';
                     } else {
-                        $msg['error'] = 'Your task could not be created...';
+                        $_SESSION['error'] = 'Your task could not be created...';
                     }
                 } else {
-                    $msg['error'] = 'Name your task.';
+                    $_SESSION['error'] = 'Name your task.';
                 }
             } else {
-                $msh['error'] = 'Invalid token.';
+                $_SESSION['error'] = 'Invalid token.';
             }
         }
     }
@@ -56,18 +56,18 @@ if (isset($_GET['action'])) {
                     ]);
 
                     if ($IsGetOk && $getId->rowCount() === 1) {
-                        $msg['notif'] = 'Your task is done, good job!';
+                        $_SESSION['notif'] = 'Your task is done, good job!';
                     } else {
-                        $msg['error'] = 'Your task could not be done.';
+                        $_SESSION['error'] = 'Your task could not be done.';
                     }
                 } else {
-                    $msg['error'] = 'Unable to target task.';
+                    $_SESSION['error'] = 'Unable to target task.';
                 }
             } else {
-                $msg['error'] = 'Invalid token.';
+                $_SESSION['error'] = 'Invalid token.';
             }
         }
     }
 }
 
-header('Location: index.php?'.http_build_query($msg));
+header('Location: index.php');

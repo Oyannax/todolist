@@ -107,10 +107,6 @@ a {
     font-family: 'Roboto Mono', monospace;
 }
 
-div.task-details {
-    padding: .5rem;
-}
-
 .form {
     position: sticky;
     bottom: 1.5rem;

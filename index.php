@@ -26,11 +26,13 @@ if (!isset($_SESSION['token']) || time() > $_SESSION['tokenExpiry']) {
         </header>
 
         <?php
-        if (isset($_GET['notif'])) {
-            echo '<div class="notif"><p class="notif-msg">'.$_GET['notif'].' 🥳</p></div>';
+        if (isset($_SESSION['notif'])) {
+            echo '<div class="notif"><p class="notif-msg">🥳 '.$_SESSION['notif'].'</p></div>';
+            unset($_SESSION['notif']);
         }
-        if (isset($_GET['error'])) {
-            echo '<div class="error"><p class="error-msg">'.$_GET['error'].' 😤</p></div>';
+        if (isset($_SESSION['error'])) {
+            echo '<div class="error"><p class="error-msg">😤 '.$_SESSION['error'].'</p></div>';
+            unset($_SESSION['error']);
         }
         ?>
 
@@ -49,12 +51,12 @@ if (!isset($_SESSION['token']) || time() > $_SESSION['tokenExpiry']) {
                     <h2 class="task-title">'.$task['name'].'</h2>
                     <p class="creation-date">'.$task['creation_date'].'</p>
                 </div>
-                <div class="task-details">
-                    <p class="description">'.$task['description'].'</p>
-                    <a class="delete-icon" href="action.php?token='.$_SESSION['token'].'&action=delete&id='.$task['id_task'].'">❌</a>
-                    <a class="modify-icon" href="action.php?token='.$_SESSION['token'].'&action=modify&id='.$task['id_task'].'">📝</a>
-                    <a class="up-icon" href="action.php?token='.$_SESSION['token'].'&action=up&id='.$task['id_task'].'">👆</a>
-                    <a class="down-icon" href="action.php?token='.$_SESSION['token'].'&action=down&id='.$task['id_task'].'">👇</a>
+                <div class="">
+                    <p class="">'.$task['description'].'</p>
+                    <a class="sub-icon" href="action.php?token='.$_SESSION['token'].'&action=modify&id='.$task['id_task'].'">📝</a>
+                    <a class="sub-icon" href="action.php?token='.$_SESSION['token'].'&action=delete&id='.$task['id_task'].'">❌</a>
+                    <a class="sub-icon" href="action.php?token='.$_SESSION['token'].'&action=up&id='.$task['id_task'].'">👆</a>
+                    <a class="sub-icon" href="action.php?token='.$_SESSION['token'].'&action=down&id='.$task['id_task'].'">👇</a>
                 </div>
             </li>';
             }
