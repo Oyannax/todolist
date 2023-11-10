@@ -1,0 +1,117 @@
+/* Google fonts import */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap');
+/* font-family: 'Roboto', sans-serif;
+font-family: 'Roboto Mono', monospace; */
+
+:root {
+    font-size: 16px;
+
+    /* Colors */
+    --beige: #FFE8D6;
+    --ashy-brown: #DDBEA9;
+    --warm-brown: #CB997E;
+    --ashy-green: #B7B7A4;
+    --light-green: #A5A58D;
+    --dark-green: #6B705C;
+    --blue: #26619C;
+    --whitey-blue: #DFF3E4;
+}
+
+/* NORMALIZER */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+}
+
+p {
+    margin: 0;
+    padding: 0;
+    font-size: 1.2rem;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+/* UTILITIES */
+.light-template {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1rem;
+    background-color: var(--beige);
+    color: var(--warm-brown);
+}
+
+.container {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1000px;
+    padding: 1rem;
+}
+
+.main-title {
+    font-family: 'Roboto Mono', monospace;
+    text-align: center;
+}
+
+/* MSG */
+.notif, .error, .form {
+    background-color: var(--blue);
+    color: var(--whitey-blue);
+    border-radius: 1rem;
+    margin: 2rem 0;
+    padding: .7rem 1.5rem;
+    width: fit-content;
+}
+
+.task {
+    background-color: var(--ashy-green);
+    color: var(--dark-green);
+    border-radius: 1rem;
+    margin: 2rem 0;
+    padding: .5rem 1rem;
+}
+
+.task-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .5rem;
+    gap: 1rem;
+}
+
+.done-icon {
+    font-size: 1.5rem;
+}
+
+.task-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.creation-date {
+    font-family: 'Roboto Mono', monospace;
+}
+
+.description {
+    padding: .5rem;
+}
+
+.form {
+    position: sticky;
+    bottom: 1.5rem;
+}
