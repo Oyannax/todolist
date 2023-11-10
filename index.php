@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once 'db.php';
+include 'includes/_db.php';
 
 if (!isset($_SESSION['token']) || time() > $_SESSION['tokenExpiry']) {
     $_SESSION['token'] = md5(uniqid(mt_rand(), true));
@@ -27,10 +27,10 @@ if (!isset($_SESSION['token']) || time() > $_SESSION['tokenExpiry']) {
 
         <?php
         if (isset($_GET['notif'])) {
-            echo '<div class="notif"><p class="notif-msg">'.$_GET['notif'].'</p></div>';
+            echo '<div class="notif"><p class="notif-msg">'.$_GET['notif'].' 🥳</p></div>';
         }
         if (isset($_GET['error'])) {
-            echo '<div class="error"><p class="error-msg">'.$_GET['error'].'</p></div>';
+            echo '<div class="error"><p class="error-msg">'.$_GET['error'].' 😤</p></div>';
         }
         ?>
 
@@ -45,11 +45,17 @@ if (!isset($_SESSION['token']) || time() > $_SESSION['tokenExpiry']) {
                 echo '
             <li class="task">
                 <div class="task-label">
-                    <a class="done-icon" href="action.php?token='.$_SESSION['token'].'&action=done&id='.$task['id_task'].'">✔</a>
+                    <a class="done-icon" href="action.php?token='.$_SESSION['token'].'&action=done&id='.$task['id_task'].'">✅</a>
                     <h2 class="task-title">'.$task['name'].'</h2>
                     <p class="creation-date">'.$task['creation_date'].'</p>
                 </div>
-                <p class="description">'.$task['description'].'</p>
+                <div class="task-details">
+                    <p class="description">'.$task['description'].'</p>
+                    <a class="delete-icon" href="action.php?token='.$_SESSION['token'].'&action=delete&id='.$task['id_task'].'">❌</a>
+                    <a class="modify-icon" href="action.php?token='.$_SESSION['token'].'&action=modify&id='.$task['id_task'].'">📝</a>
+                    <a class="up-icon" href="action.php?token='.$_SESSION['token'].'&action=up&id='.$task['id_task'].'">👆</a>
+                    <a class="down-icon" href="action.php?token='.$_SESSION['token'].'&action=down&id='.$task['id_task'].'">👇</a>
+                </div>
             </li>';
             }
             ?>

@@ -107,7 +107,7 @@ a {
     font-family: 'Roboto Mono', monospace;
 }
 
-.description {
+div.task-details {
     padding: .5rem;
 }
 
