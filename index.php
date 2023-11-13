@@ -2,12 +2,16 @@
 session_start();
 include 'includes/_db.php';
 
+// function checkCSRF(string $url): void {
+//     if (!isset($_SERVER['HTTP_REFERER']) || !str_contains($_SERVER['HTTP_REFERER'], 'http://localhost/todolist/')) {
+
+//     }
+// }
+
 if (!isset($_SESSION['token']) || time() > $_SESSION['tokenExpiry']) {
     $_SESSION['token'] = md5(uniqid(mt_rand(), true));
     $_SESSION['tokenExpiry'] = time() + 15 * 60;
 }
-// var_dump($_SESSION);
-// var_dump($_POST['token']);
 ?>
 
 <!DOCTYPE html>
@@ -37,40 +41,70 @@ if (!isset($_SESSION['token']) || time() > $_SESSION['tokenExpiry']) {
         ?>
 
         <ul class="task-list">
+
             <?php
-            $displayTasks = $dbCo->prepare("SELECT id_task, name, description, creation_date FROM task WHERE done = 0 ORDER BY creation_date DESC;");
+            $displayTasks = $dbCo->prepare("SELECT id_task, name, description, creation_date FROM task WHERE done = 0 ORDER BY order_ DESC;");
             $displayTasks->execute();
             $tasks = $displayTasks->fetchAll();
 
             foreach ($tasks as $task) {
+                $isEditOk = isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id']) && $_GET['id'] === $task['id_task'];
                 $task['creation_date'] = substr($task['creation_date'], 0, -9);
-                echo '
+            ?>
+
             <li class="task">
                 <div class="task-label">
-                    <a class="done-icon" href="action.php?token='.$_SESSION['token'].'&action=done&id='.$task['id_task'].'">✅</a>
-                    <h2 class="task-title">'.$task['name'].'</h2>
-                    <p class="creation-date">'.$task['creation_date'].'</p>
+                    <a class="done-icon" href="action.php?token=<?= $_SESSION['token'] ?>&action=done&id=<?= $task['id_task'] ?>">✅</a>
+
+                <?php if ($isEditOk) { ?>
+
+                    <form action="action.php" method="POST">
+                        <input type="text" name="task-title" value="<?= $task['name'] ?>">
+                        <input type="textarea" name="description" value="<?= $task['description'] ?>">
+                        <input type="hidden" name="action" value="edit">
+                        <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
+                        <input type="hidden" name="id" value="<?= $task['id_task'] ?>">
+                        <input type="submit" value="📝">
+                    </form>
+
+                <?php } else { ?>
+
+                    <h2 class="task-title"><?= $task['name'] ?></h2>
+                    <p class="creation-date"><?= $task['creation_date'] ?></p>
                 </div>
-                <div class="">
-                    <p class="">'.$task['description'].'</p>
-                    <a class="sub-icon" href="action.php?token='.$_SESSION['token'].'&action=modify&id='.$task['id_task'].'">📝</a>
-                    <a class="sub-icon" href="action.php?token='.$_SESSION['token'].'&action=delete&id='.$task['id_task'].'">❌</a>
-                    <a class="sub-icon" href="action.php?token='.$_SESSION['token'].'&action=up&id='.$task['id_task'].'">👆</a>
-                    <a class="sub-icon" href="action.php?token='.$_SESSION['token'].'&action=down&id='.$task['id_task'].'">👇</a>
+                <div class="task-details">
+                    <p class="description"><?= $task['description'] ?></p>
+
+                <?php } ?>
+
+                    <div class="sub-icons">
+
+                <?php if (!$isEditOk) { ?>
+
+                    <a class="sub-icon" href="index.php?token=<?= $_SESSION['token'] ?>&action=edit&id=<?= $task['id_task'] ?>">📝</a>
+
+                <?php } ?>
+
+                        <a class="sub-icon" href="action.php?token=<?= $_SESSION['token'] ?>&action=delete&id=<?= $task['id_task'] ?>">❌</a>
+                        <a class="sub-icon" href="action.php?token=<?= $_SESSION['token'] ?>&action=up&id=<?= $task['id_task'] ?>">👆</a>
+                        <a class="sub-icon" href="action.php?token=<?= $_SESSION['token'] ?>&action=down&id=<?= $task['id_task'] ?>">👇</a>
+                    </div>
                 </div>
-            </li>';
-            }
-            ?>
+            </li>
+
+            <?php } ?>
+
         </ul>
 
         <div class="form">
-            <form action="action.php?action=add" method="POST">
+            <form action="action.php" method="POST">
                 <label>Wanna add a task?
                     <input type="text" name="task-title" placeholder="Your task name">
                     <input type="textarea" name="description" placeholder="Any details?">
+                    <input type="hidden" name="action" value="add">
                     <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 </label>
-                <input type="submit" value="Add">
+                <input type="submit" value="👍">
             </form>
         </div>
     </div>

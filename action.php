@@ -3,70 +3,131 @@ session_start();
 include 'includes/_db.php';
 
 // Create a task
-if (isset($_GET['action'])) {
+if (isset($_POST['action']) && $_POST['action'] === 'add' && isset($_POST['task-title'])) {
+    
+    // Check if the session token is the same as the form token
+    if (isset($_SESSION['token']) && isset($_POST['token']) && $_SESSION['token'] === $_POST['token']) {
+        $name = strip_tags($_POST['task-title']);
+        $description = strip_tags($_POST['description']);
+        $today = new DateTime();
+        $today->setTimezone(new DateTimeZone('Europe/Paris'));
+        $todayDate = $today->format('Y-m-d H:i:s');
+        
+        if (strlen($name) > 0) {
+            $query = $dbCo->prepare("SELECT COUNT(order_) FROM task WHERE done = 0;");
+            $query->execute();
+            $order = $query->fetchColumn() + 1;
 
-    if ($_GET['action'] === 'add') {
-        if (isset($_POST['task-title'])) {
-        
-            // Check if the session token is the same as the form token
-            if (isset($_SESSION['token']) && isset($_POST['token']) && $_SESSION['token'] === $_POST['token']) {
-                $name = strip_tags($_POST['task-title']);
-                $description = strip_tags($_POST['description']);
-                $today = new DateTime();
-                $today->setTimezone(new DateTimeZone('Europe/Paris'));
-                $todayDate = $today->format('Y-m-d H:i:s');
-        
-                if (strlen($name) > 0) {
-                    $addTask = $dbCo->prepare("INSERT INTO task (name, description, creation_date, done) VALUES (:name, :description, :todayDate, '0');");
-                    $IsAddOk = $addTask->execute([
-                        'name' => $name,
-                        'description' => $description,
-                        'todayDate' => $todayDate
-                    ]);
-        
-                    if ($IsAddOk && $addTask->rowCount() === 1) {
-                        $_SESSION['notif'] = 'Your task has been created!';
-                    } else {
-                        $_SESSION['error'] = 'Your task could not be created...';
-                    }
-                } else {
-                    $_SESSION['error'] = 'Name your task.';
-                }
+            $addTask = $dbCo->prepare("INSERT INTO task (name, description, creation_date, done, order_) VALUES (:name, :description, :todayDate, 0, :order);");
+            $isAddOk = $addTask->execute([
+                'name' => $name,
+                'description' => $description,
+                'todayDate' => $todayDate,
+                'order' => $order
+            ]);
+            
+            if ($isAddOk && $addTask->rowCount() === 1) {
+                $_SESSION['notif'] = 'Your task has been created!';
             } else {
-                $_SESSION['error'] = 'Invalid token.';
+                $_SESSION['error'] = 'Your task could not be created...';
             }
+        } else {
+            $_SESSION['error'] = 'Name your task.';
         }
+    } else {
+        $_SESSION['error'] = 'Invalid token.';
     }
-}
-
 // Declare a task as done
-if (isset($_GET['action'])) {
+} else if (isset($_GET['action']) && $_GET['action'] === 'done' && isset($_GET['id'])) {
 
-    if ($_GET['action'] === 'done') {
+    if (isset($_SESSION['token']) && isset($_GET['token']) && $_SESSION['token'] === $_GET['token']) {
+        $id = intval(strip_tags($_GET['id']));
 
-        if (isset($_GET['id'])) {
+        if (!empty($id)) {
+            $getId = $dbCo->prepare("UPDATE task SET done = 1 WHERE id_task = :id;");
+            $isGetOk = $getId->execute([
+                'id' => $id
+            ]);
 
-            if (isset($_SESSION['token']) && isset($_GET['token']) && $_SESSION['token'] === $_GET['token']) {
-                $id = intval(strip_tags($_GET['id']));
+            if ($isGetOk && $getId->rowCount() === 1) {
+                $_SESSION['notif'] = 'Your task is done, good job!';
+            } else {
+                $_SESSION['error'] = 'Your task could not be done.';
+            }
+        } else {
+            $_SESSION['error'] = 'Unable to target task.';
+        }
+    } else {
+        $_SESSION['error'] = 'Invalid token.';
+    }
+// Delete a task
+} else if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
 
-                if (!empty($id)) {
-                    $getId = $dbCo->prepare("UPDATE task SET done = 1 WHERE id_task = :id;");
-                    $IsGetOk = $getId->execute([
-                        'id' => $id
-                    ]);
+    if (isset($_SESSION['token']) && isset($_GET['token']) && $_SESSION['token'] === $_GET['token']) {
+        $id = intval(strip_tags($_GET['id']));
 
-                    if ($IsGetOk && $getId->rowCount() === 1) {
-                        $_SESSION['notif'] = 'Your task is done, good job!';
-                    } else {
-                        $_SESSION['error'] = 'Your task could not be done.';
-                    }
+        if (!empty($id)) {
+            $query1 = $dbCo->prepare("SELECT id_task FROM task WHERE done = 0 AND order_ > (SELECT order_ FROM task WHERE id_task = :id);");
+            $query1->execute([
+                'id' => $id
+            ]);
+            $tasks = $query1->fetchAll();
+
+            foreach ($tasks as $task) {
+                $query2 = $dbCo->prepare("UPDATE task SET order_ = order_ - 1 WHERE id_task = :task;");
+                $query2->execute([
+                    'task' => intval($task['id_task'])
+                ]);
+            }
+
+            $getId = $dbCo->prepare("DELETE FROM task WHERE id_task = :id;");
+            $isGetOk = $getId->execute([
+                'id' => $id
+            ]);
+
+            if ($isGetOk && $getId->rowCount() === 1) {
+                $_SESSION['notif'] = 'Your task has been deleted.';
+            } else {
+                $_SESSION['error'] = 'Your task could not be deleted.';
+            }
+        } else {
+            $_SESSION['error'] = 'Unable to target task.';
+        }
+    } else {
+        $_SESSION['error'] = 'Invalid token.';
+    }
+// Edit a task
+} else if (isset($_POST['action']) && $_POST['action'] === 'edit' && isset($_POST['task-title']) && isset($_POST['id'])) {
+
+    // Check if the session token is the same as the form token
+    if (isset($_SESSION['token']) && isset($_POST['token']) && $_SESSION['token'] === $_POST['token']) {
+        $name = strip_tags($_POST['task-title']);
+        $description = strip_tags($_POST['description']);
+        $id = intval(strip_tags($_POST['id']));
+
+        if (strlen($name) > 0) {
+
+            if (!empty($id)) {
+                $editTask = $dbCo->prepare("UPDATE task SET name = :name, description = :description WHERE id_task = :id;");
+                $isEditOk = $editTask->execute([
+                    'name' => $name,
+                    'description' => $description,
+                    'id' => $id
+                ]);
+
+                if ($isEditOk && $editTask->rowCount() === 1) {
+                    $_SESSION['notif'] = 'Your task has been modified!';
                 } else {
-                    $_SESSION['error'] = 'Unable to target task.';
+                    $_SESSION['error'] = 'Your task could not be modified...';
                 }
             } else {
-                $_SESSION['error'] = 'Invalid token.';
+                $_SESSION['error'] = 'Unable to target task.';
             }
+        } else {
+            $_SESSION['error'] = 'Name your task.';
         }
+    } else {
+        $_SESSION['error'] = 'Invalid token.';
     }
 }
 
