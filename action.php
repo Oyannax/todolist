@@ -129,6 +129,38 @@ if (isset($_POST['action']) && $_POST['action'] === 'add' && isset($_POST['task-
     } else {
         $_SESSION['error'] = 'Invalid token.';
     }
+} else if (isset($_GET['action']) && $_GET['action'] === 'up' && isset($_GET['id'])) {
+
+    if (isset($_SESSION['token']) && isset($_GET['token']) && $_SESSION['token'] === $_GET['token']) {
+        $id1 = intval(strip_tags($_GET['id']));
+
+        if (!empty($id1)) {
+            $query1 = $dbCo->prepare("SELECT order_ FROM task WHERE id_task = :id1 AND order_ <> (SELECT MAX(order_) FROM task);");
+            $query1->execute([
+                'id1' => $id1
+            ]);
+            $order1 = $query1->fetchColumn() + 1;
+
+            $editOrder1 = $dbCo->prepare("UPDATE task SET order_ = :order1 WHERE id_task = :id1;");
+            $isEditOk1 = $editOrder1->execute([
+                'order1' => $order1,
+                'id1' => $id1
+            ]);
+
+            if ($isEditOk1 && $editOrder1->rowCount() === 1) {
+                $query2 = $dbCo->prepare("SELECT id_task FROM task WHERE done = 0 AND order_ = (SELECT order_ FROM task WHERE id_task = :id1);");
+                $query2->execute([
+                    'id1' => $id1
+                ]);
+                $id2 = $query2->fetchColumn();
+
+                $editOrder2 = $dbCo->prepare("UPDATE task SET order_ = order_ - 1 WHERE id_task = :id2;");
+                $isEditOk2 = $editOrder2->execute([
+                    'id2' => $id2
+                ]);
+            }
+        }
+    }
 }
 
 header('Location: index.php');
