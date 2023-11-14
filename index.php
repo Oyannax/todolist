@@ -49,6 +49,7 @@ if (!isset($_SESSION['token']) || time() > $_SESSION['tokenExpiry']) {
 
             foreach ($tasks as $task) {
                 $isEditOk = isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id']) && $_GET['id'] === $task['id_task'];
+                $isRemindOk = isset($_GET['action']) && $_GET['action'] === 'remind' && isset($_GET['id']) && $_GET['id'] === $task['id_task'];
                 $task['creation_date'] = substr($task['creation_date'], 0, -9);
             ?>
 
@@ -59,12 +60,12 @@ if (!isset($_SESSION['token']) || time() > $_SESSION['tokenExpiry']) {
                 <?php if ($isEditOk) { ?>
 
                     <form action="action.php" method="POST">
-                        <input type="text" name="task-title" value="<?= $task['name'] ?>">
-                        <input type="textarea" name="description" value="<?= $task['description'] ?>">
+                        <input class="text-input" type="text" name="task-title" value="<?= $task['name'] ?>">
+                        <input class="text-input" type="textarea" name="description" value="<?= $task['description'] ?>">
                         <input type="hidden" name="action" value="edit">
                         <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                         <input type="hidden" name="id" value="<?= $task['id_task'] ?>">
-                        <input type="submit" value="📝">
+                        <input class="submit-input" type="submit" value="📝">
                     </form>
 
                 <?php } else { ?>
@@ -85,6 +86,7 @@ if (!isset($_SESSION['token']) || time() > $_SESSION['tokenExpiry']) {
 
                 <?php } ?>
 
+                        <a class="sub-icon" href="action.php?token=<?= $_SESSION['token'] ?>&action=remind&id=<?= $task['id_task'] ?>">⏰</a>
                         <a class="sub-icon" href="action.php?token=<?= $_SESSION['token'] ?>&action=delete&id=<?= $task['id_task'] ?>">❌</a>
                         <a class="sub-icon" href="action.php?token=<?= $_SESSION['token'] ?>&action=up&id=<?= $task['id_task'] ?>">👆</a>
                         <a class="sub-icon" href="action.php?token=<?= $_SESSION['token'] ?>&action=down&id=<?= $task['id_task'] ?>">👇</a>
@@ -98,13 +100,13 @@ if (!isset($_SESSION['token']) || time() > $_SESSION['tokenExpiry']) {
 
         <div class="form">
             <form action="action.php" method="POST">
-                <label>Wanna add a task?
-                    <input type="text" name="task-title" placeholder="Your task name">
-                    <input type="textarea" name="description" placeholder="Any details?">
+                <label class="form-label">Wanna add a task?
+                    <input class="text-input" type="text" name="task-title" placeholder="Your task name">
+                    <input class="text-input" type="textarea" name="description" placeholder="Any details?">
                     <input type="hidden" name="action" value="add">
                     <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 </label>
-                <input type="submit" value="👍">
+                <input class="submit-input" type="submit" value="👍">
             </form>
         </div>
     </div>

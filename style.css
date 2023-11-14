@@ -97,6 +97,17 @@ a {
     font-size: 1.5rem;
 }
 
+.text-input {
+    border: none;
+    border-radius: 1rem;
+}
+
+.submit-input {
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+}
+
 .task-title {
     white-space: nowrap;
     overflow: hidden;
@@ -108,10 +119,20 @@ a {
 }
 
 .task-details {
+    display: flex;
+    justify-content: space-between;
     padding: .5rem;
+}
+
+.sub-icons {
+    font-size: 1.3rem;
 }
 
 .form {
     position: sticky;
     bottom: 1.5rem;
+}
+
+.form-label {
+    font-size: 1.2rem;
 }
