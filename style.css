@@ -100,7 +100,7 @@ a {
     gap: 1rem;
 }
 
-.main-icons {
+.done-icon, .reminder-icon {
     font-size: 1.5rem;
 }
 
@@ -121,7 +121,11 @@ a {
     text-overflow: ellipsis;
 }
 
-.creation-date {
+.reminder {
+    display: flex;
+}
+
+.reminder-date {
     font-family: 'Roboto Mono', monospace;
 }
 

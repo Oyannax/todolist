@@ -238,6 +238,37 @@ if (isset($_POST['action']) && $_POST['action'] === 'add' && isset($_POST['task-
     } else {
         $_SESSION['error'] = 'Invalid token.';
     }
+    // Set a reminder
+} else if (isset($_POST['action']) && $_POST['action'] === 'remind' && isset($_POST['reminder-date']) && isset($_POST['id'])) {
+
+    if (isset($_SESSION['token']) && isset($_POST['token']) && $_SESSION['token'] === $_POST['token']) {
+        $reminder = strip_tags($_POST['reminder-date']);
+        $id = intval(strip_tags($_POST['id']));
+        // var_dump($reminder);
+
+        if ($reminder !== '') {
+
+            if (!empty($id)) {
+                $editTask = $dbCo->prepare("UPDATE task SET reminder = :reminder WHERE id_task = :id;");
+                $isEditOk = $editTask->execute([
+                    'reminder' => $reminder,
+                    'id' => $id
+                ]);
+
+                if ($isEditOk && $editTask->rowCount() === 1) {
+                    $_SESSION['notif'] = 'Your reminder date has been set.';
+                } else {
+                    $_SESSION['error'] = 'Your reminder date could not be set.';
+                }
+            } else {
+                $_SESSION['error'] = 'Unable to target task.';
+            }
+        } else {
+            $_SESSION['error'] = 'Choose a date.';
+        }
+    } else {
+        $_SESSION['error'] = 'Invalid token.';
+    }
 }
 
 header('Location: index.php');

@@ -44,21 +44,19 @@ if (!isset($_SESSION['token']) || time() > $_SESSION['tokenExpiry']) {
         <ul class="task-list">
 
             <?php
-            $displayTasks = $dbCo->prepare("SELECT id_task, name, description, creation_date FROM task WHERE done = 0 ORDER BY order_ DESC;");
+            $displayTasks = $dbCo->prepare("SELECT id_task, name, description, reminder FROM task WHERE done = 0 ORDER BY order_ DESC;");
             $displayTasks->execute();
             $tasks = $displayTasks->fetchAll();
 
             foreach ($tasks as $task) {
                 $isEditOk = isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id']) && $_GET['id'] === $task['id_task'];
                 $isRemindOk = isset($_GET['action']) && $_GET['action'] === 'remind' && isset($_GET['id']) && $_GET['id'] === $task['id_task'];
-                $task['creation_date'] = substr($task['creation_date'], 0, -9);
+                // $task['creation_date'] = substr($task['creation_date'], 0, -9);
             ?>
 
                 <li class="task">
                     <div class="task-label">
-                        <div class="main-icons">
-                            <a href="action.php?token=<?= $_SESSION['token'] ?>&action=done&id=<?= $task['id_task'] ?>">✅</a>
-                        </div>
+                        <a class="done-icon" href="action.php?token=<?= $_SESSION['token'] ?>&action=done&id=<?= $task['id_task'] ?>">✅</a>
 
                         <?php if ($isEditOk) { ?>
 
@@ -74,16 +72,18 @@ if (!isset($_SESSION['token']) || time() > $_SESSION['tokenExpiry']) {
                         <?php } else { ?>
 
                             <h2 class="task-title"><?= $task['name'] ?></h2>
-                            <!-- <p class="creation-date"><?= $task['creation_date'] ?></p> -->
 
                             <?php if (!$isRemindOk) { ?>
 
-                                <a href="index.php?token=<?= $_SESSION['token'] ?>&action=remind&id=<?= $task['id_task'] ?>">⏰</a>
+                                <div class="reminder">
+                                    <p class="reminder-date"><?= $task['reminder'] ?></p>
+                                    <a class="reminder-icon" href="index.php?token=<?= $_SESSION['token'] ?>&action=remind&id=<?= $task['id_task'] ?>">⏰</a>
+                                </div>
 
                             <?php } else { ?>
 
                                 <form action="action.php" method="POST">
-                                    <input class="date-input" type="date" name="reminder-date">
+                                    <input class="date-input" type="date" name="reminder-date" value="<?= $task['reminder'] ?>">
                                     <input type="hidden" name="action" value="remind">
                                     <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                                     <input type="hidden" name="id" value="<?= $task['id_task'] ?>">
