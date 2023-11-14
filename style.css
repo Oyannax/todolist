@@ -26,7 +26,12 @@ body {
     margin: 0;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin: 0;
     padding: 0;
 }
@@ -68,7 +73,9 @@ a {
 }
 
 /* MSG */
-.notif, .error, .form {
+.notif,
+.error,
+.form {
     background-color: var(--blue);
     color: var(--whitey-blue);
     border-radius: 1rem;
@@ -93,7 +100,7 @@ a {
     gap: 1rem;
 }
 
-.done-icon {
+.main-icons {
     font-size: 1.5rem;
 }
 
