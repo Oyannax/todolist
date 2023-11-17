@@ -104,9 +104,11 @@ a {
     font-size: 1.5rem;
 }
 
-.text-input {
+.text-input, .data-input {
     border: none;
     border-radius: 1rem;
+    font-size: 1rem;
+    text-align: center;
 }
 
 .submit-input {
